@@ -1,0 +1,24 @@
+{
+  "name": "Arxiv ChromeExtension",
+  "authors": [
+    "mshockwave <yihshyng223@gmail.com>"
+  ],
+  "moduleType": [
+    "globals"
+  ],
+  "license": "Apache 2.0",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.2.0",
+    "paper-elements": "PolymerElements/paper-elements#^1.0.1",
+    "iron-elements": "PolymerElements/iron-elements#^1.0.0"
+  }
+}

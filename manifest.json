@@ -1,0 +1,31 @@
+{
+  "name": "Arxiv Videos",
+  "manifest_version": 2,
+  "version": "0.1",
+  "description": "Show Arxiv videos on http://www.arxiv-sanity.com/",
+
+  "background": {
+    "scripts": ["filter.js"],
+    "persistent": false
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["http://*.arxiv-sanity.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+
+  "page_action": {
+    "default_title": "Arxiv Videos",
+    "default_popup": "popup.html"
+  },
+
+  "permissions" : [
+    "declarativeContent",
+    "tabs"
+  ],
+
+  "content_security_policy": "script-src 'self' https://apis.google.com; object-src 'self'"
+}
