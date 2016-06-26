@@ -3,23 +3,34 @@ var isGapiLoaded = false;
 var idList = [];
 var idIndex = 0;
 
+var SEARCHING_MSG_STR = 'Searching Youtube...';
+var EMPTY_SEARCH_RESULT_MSG_STR = 'No Result Found';
+
 var app = document.querySelector('#app');
 
 var queryYoutube = function(){
-    if(idIndex >= idList.length) return;
+    if(idIndex >= idList.length){
+
+      if(app.resultList && app.resultList.length == 0){
+        app.set('phMsg', EMPTY_SEARCH_RESULT_MSG_STR);
+        app.set('showPlaceHoldingMsg', true);
+      }
+
+      return;
+    }
 
     var keyword = idList[idIndex];
     console.log('Querying youtube: ' + keyword);
 
     var request = gapi.client.youtube.search.list({
-        maxResult: 2, //TODO: Put into config
+        maxResult: 1,
         q: keyword,
         type: 'video',
         part: 'snippet'
     });
     request.execute(function(resp){
 
-        console.log(resp);
+        //console.log(resp);
 
         if(resp.result){
             var result = resp.result;
@@ -49,6 +60,7 @@ var queryYoutube = function(){
                     resultObj.description = snippet.description;
                 }
 
+                if(app.showPlaceHoldingMsg) app.set('showPlaceHoldingMsg', false);
                 app.push('resultList', resultObj);
             });
         }
@@ -67,13 +79,20 @@ var loadYoutubeApi = function(){
     idList = idSet.toArray()[0];
 
     gapi.client.setApiKey(yt_api_key);
-    gapi.client.load('youtube', 'v3').then(queryYoutube);
+    gapi.client.load('youtube', 'v3').then(function(){
+      app.set('phMsg', SEARCHING_MSG_STR);
+      app.set('showPlaceHoldingMsg', true);
+
+      queryYoutube();
+    });
 };
 
 app.addEventListener('dom-change', function(){
 
     // App Init
     app.resultList = [];
+    app.phMsg = SEARCHING_MSG_STR;
+    app.showPlaceHoldingMsg = true;
 
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
         if(tabs.length > 0){

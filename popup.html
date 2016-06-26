@@ -32,6 +32,15 @@
             };
         }
 
+        paper-toolbar {
+          --paper-toolbar-background: #D32F2F;
+        }
+
+        #placeHoldingMsg {
+          font-size: 16px;
+          color: #9E9E9E;
+        }
+
         paper-card {
             --paper-card: {
                 margin-bottom: 10px;
@@ -74,6 +83,12 @@
             </paper-toolbar>
 
             <div class="content fit">
+                <template is="dom-if" if="[[showPlaceHoldingMsg]]" restamp="true">
+                  <div class="layout horizontal center center-justified">
+                    <span id="placeHoldingMsg">[[phMsg]]</span>
+                  </div>
+                </template>
+
                 <template is="dom-repeat" items="{{resultList}}" as="resultItem">
                     <paper-card heading="[[resultItem.title]]">
                         <div class="card-content layout horizontal start">
