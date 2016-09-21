@@ -12,7 +12,11 @@
   "content_scripts": [
     {
       "matches": ["http://*.arxiv-sanity.com/*"],
-      "js": ["content.js"],
+      "js": [
+        "bower_components/waypoints/lib/noframework.waypoints.min.js",
+        "keys.js",
+        "content.js"
+      ],
       "run_at": "document_end"
     }
   ],

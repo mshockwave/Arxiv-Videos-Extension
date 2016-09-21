@@ -51,7 +51,7 @@ gulp.task('copy', function() {
         'webcomponentsjs,' +
         'platinum-sw,sw-toolbox,' +
         'promise-polyfill,' +
-        'dentistjs,' +
+        'waypoints,' + 
         'jquery,jquery.scrollTo,' +
         'fetch' +
         '}/**/*'
