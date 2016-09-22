@@ -12,14 +12,14 @@ var dist = function(subpath) {
 };
 
 gulp.task('vulcanize', function(){
-    return gulp.src('elements/elements.html')
+    return gulp.src('popup.html')
         .pipe($.vulcanize({
             stripComments: true,
             inlineCss: true,
             inlineScripts: true
         }))
-        .pipe($.crisper())
-        .pipe(gulp.dest(dist('elements')));
+        //.pipe($.crisper())
+        .pipe(gulp.dest(dist()));
 });
 
 gulp.task('copyImg', function(){
@@ -34,6 +34,7 @@ gulp.task('copy', function() {
         './*',
         '!test',
         '!elements',
+        '!popup.*',
         '!bower_components',
         '!node_modules',
         '!dist',

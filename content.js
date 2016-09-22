@@ -2,64 +2,72 @@ var domObserver = null;
 
 /**
  * key: paper id,
- * value: result obj
+ * value: list of result objs
  */
 var resultCache = {};
 
 var ytapi;
 
-/*
-var isObjEmpty = function(obj){
-  if(obj === undefined || obj === null) return true;
-
-  if(obj instanceof Array) return !(obj.length > 0);
-
-  var empty = true;
-  for(var f in obj){
-    if(obj.hasOwnProperty(f)){
-      empty = false;
-      break;
-    }
-  }
-
-  return empty;
-}
-*/
-
-var addNavigateButton = function(nodeId, resultObj){
-
-  // elevation 6dp
-  var shadowStyle = 'box-shadow: ' + 
-                    '0 6px 10px 0 rgba(0, 0, 0, 0.14),' + 
-                    '0 1px 18px 0 rgba(0, 0, 0, 0.12),' +
-                    '0 3px 5px -1px rgba(0, 0, 0, 0.4);';
-  
-  console.log('Add navigate button at #' + nodeId);
+// elevation 6dp
+var extraButtonShadowStyle = 'box-shadow: ' + 
+                              '0 6px 10px 0 rgba(0, 0, 0, 0.14),' + 
+                              '0 1px 18px 0 rgba(0, 0, 0, 0.12),' +
+                              '0 3px 5px -1px rgba(0, 0, 0, 0.4);';
+var extraButtonBaseStyle = ' margin-left: 10px;' + 
+                            ' padding: 5px;' +
+                            extraButtonShadowStyle + 
+                            ' text-decoration: none;' + 
+                            ' font-weight: 300;';
+var getPaperTitleNode = function(nodeId){
   var paperNode = document.getElementById(nodeId);
-  var titleNode = paperNode.querySelector('.paperdesc')
-                            .querySelector('.ts');
+  return paperNode.querySelector('.paperdesc')
+                  .querySelector('.ts');          
+};
+
+var addDirectNavigateButton = function(nodeId, resultObj){
+  
+  //console.log('Add button at #' + nodeId);
   var naviButton = document.createElement('a');
-  naviButton.style = 'color: white;' + 
-                      ' background-color: red;' + 
-                      ' margin-left: 10px;' + 
-                      ' padding: 5px;' +
-                      shadowStyle + 
-                      ' text-decoration: none;';
+  naviButton.style = extraButtonBaseStyle + 
+                      ' background-color: ' + '#E91E63;' +
+                      ' color: white;';
   naviButton.href = resultObj.videoUrl;
   naviButton.target = "_blank";
-  naviButton.innerText = 'GOTO YOUTUBE VIDEO';
-  titleNode.appendChild(naviButton);
+  naviButton.innerText = 'Go To Youtube Video';
+  getPaperTitleNode(nodeId).appendChild(naviButton);
+};
+var addShowPopupButton = function(nodeId, resultList){
+  
+  var resultListStr = JSON.stringify(resultList);
+
+  var toggleButton = document.createElement('span');
+  toggleButton.style = extraButtonBaseStyle + 
+                        ' background-color: ' + '#E91E63;' + 
+                        ' color: white;' +
+                        ' cursor: pointer;';
+  toggleButton.innerText = 'Show Related Videos';
+  toggleButton.onclick = function(){
+    var wrapperScript = 
+        "var popupElement = document.querySelector('arxiv-video-popup');" + 
+        "if(popupElement){" + 
+        " popupElement.results = JSON.parse(\'" + resultListStr + "\');" + 
+        " popupElement.hidden = false;" + 
+        "}";
+    var wrapperScriptElement = document.createElement('script');
+    wrapperScriptElement.innerText = wrapperScript;
+    getPaperTitleNode(nodeId).appendChild(wrapperScriptElement);  
+  };
+  getPaperTitleNode(nodeId).appendChild(toggleButton);
 };
 var queryYoutube = function(nodeId){
 
   var queryId = (nodeId + "").replace(/(v\d)$/, '');
   if(resultCache.hasOwnProperty(queryId)) return;
-  // Use empty object to mark as 'querying'
-  resultCache[queryId] = {};
+  // Use empty list to mark as 'querying'
+  resultCache[queryId] = [];
 
   //console.log('Querying youtube: ' + queryId);
   ytapi.search({
-      maxResult: 1,
       q: queryId,
       type: 'video',
       part: 'snippet'
@@ -71,36 +79,41 @@ var queryYoutube = function(nodeId){
     //console.log(resp);
 
     if(result && result.items.length > 0){
-      // Only pick the first search result
-      var item = result.items[0];
-      var resultObj = {};
+      console.log('Got video(s), size: ' + result.items.length);
+      result.items.forEach(function(item){
+        var resultObj = {};
 
-      if(item.id.videoId){
-          resultObj.videoUrl = 'https://www.youtube.com/watch?v=' + item.id.videoId;
+        if(item.id.videoId){
+            resultObj.videoUrl = 'https://www.youtube.com/watch?v=' + item.id.videoId;
+        }
+
+        var snippet = item.snippet;
+        resultObj.title = snippet.title;
+
+        if(snippet.thumbnails.default){
+            var img = snippet.thumbnails.default;
+            resultObj.imgUrl = img.url;
+            resultObj.imgHeight = img.height;
+            resultObj.imgWidth = img.width;
+        }
+
+        if(snippet.publishedAt){
+            var timestampObj = new Date(snippet.publishedAt);
+            resultObj.timestamp = timestampObj.toLocaleDateString();
+        }
+
+        if(snippet.description){
+            resultObj.description = snippet.description;
+        }
+
+        resultCache[queryId].push(resultObj);
+      });
+
+      if(result.items.length > 1){
+        addShowPopupButton(nodeId, resultCache[queryId]);
+      }else {
+        addDirectNavigateButton(nodeId, resultCache[queryId][0]);
       }
-
-      var snippet = item.snippet;
-      resultObj.title = snippet.title;
-
-      if(snippet.thumbnails.default){
-          var img = snippet.thumbnails.default;
-          resultObj.imgUrl = img.url;
-          resultObj.imgHeight = img.height;
-          resultObj.imgWidth = img.width;
-      }
-
-      if(snippet.publishedAt){
-          var timestampObj = new Date(snippet.publishedAt);
-          resultObj.timestamp = timestampObj.toLocaleDateString();
-      }
-
-      if(snippet.description){
-          resultObj.description = snippet.description;
-      }
-
-      resultCache[queryId] = resultObj;
-
-      addNavigateButton(nodeId, resultObj);
     }
     
   });
@@ -131,7 +144,19 @@ var setUpDOMObserver = function(){
     });
   }
 };
+var preparePopupElement = function(){
+  var popupUri = chrome.extension.getURL('popup.html');
+  var linkElement = document.createElement('link');
+  linkElement.rel = "import";
+  linkElement.href = popupUri;
+  document.body.appendChild(linkElement);
+
+  var popupElement = document.createElement('arxiv-video-popup');
+  document.body.appendChild(popupElement);
+};
 (function(){
+
+  preparePopupElement();
 
   ytapi = new YtAPI(yt_api_key);
 

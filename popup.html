@@ -1,103 +1,104 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-    <!-- API keys -->
-    <script src="keys.js"></script>
+<script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
+<link rel="import" href="elements/elements.html">
 
-    <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
-    <link rel="import" href="elements/elements.html">
+<dom-module id="arxiv-video-popup">
+    <template>
+        <style>
+            :host {
+                display: block;
+                margin: 0;
+                padding: 0;
 
-    <script src="immutable.min.js"></script>
+                width: 300px;
+                height: 480px;
 
-    <style is="custom-style">
+                position: fixed;
+                top: 10vh;
+                right: 5vw;
 
-        html, body {
-            margin: 0;
-            padding: 0;
+                z-index: 10; /*on top of everything*/
 
-            width: 300px;
-            height: 480px;
-        }
-
-        .content {
-            padding: 10px;
-        }
-
-        paper-header-panel {
-            --paper-header-panel-body: {
-                background: #E0E0E0;
-            };
-        }
-
-        paper-toolbar {
-          --paper-toolbar-background: #D32F2F;
-        }
-
-        #placeHoldingMsg {
-          font-size: 16px;
-          color: #9E9E9E;
-        }
-
-        paper-card {
-            --paper-card: {
-                margin-bottom: 10px;
-                width: 280px;
-            };
-
-            --paper-card-header-text: {
+                box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.14),
+                            0 3px 14px 2px rgba(0, 0, 0, 0.12),
+                            0 5px 5px -3px rgba(0, 0, 0, 0.4);
+            }
+            
+            .content {
                 padding: 10px;
+            }
+            
+            paper-header-panel {
+                --paper-header-panel-body: {
+                    background: #E0E0E0;
+                }
+                ;
+            }
+            
+            paper-toolbar {
+                --paper-toolbar-background: #D32F2F;
+            }
+            
+            #placeHoldingMsg {
                 font-size: 16px;
-                font-weight: 500;
-            };
-        }
-        .card-content {
-            --paper-card-content: {
-                padding: 10px 14px;
-            };
-        }
+                color: #9E9E9E;
+            }
+            
+            paper-card {
+                --paper-card: {
+                    margin-bottom: 10px;
+                    width: 280px;
+                }
+                ;
+                --paper-card-header-text: {
+                    padding: 10px;
+                    font-size: 16px;
+                    font-weight: 500;
+                }
+                ;
+            }
+            
+            .card-content {
+                --paper-card-content: {
+                    padding: 10px 14px;
+                }
+                ;
+            }
+            
+            .card-content .text-area {
+                margin-left: 10px;
+            }
+            
+            .card-content .text-area span {
+                font-weight: bold;
+            }
+            
+            .card-content .text-area p {
+                text-overflow: ellipsis;
+            }
+            
+            .card-actions a {
+                text-decoration: none;
+                color: black;
+            }
+        </style>
 
-        .card-content .text-area {
-            margin-left: 10px;
-        }
-        .card-content .text-area span{
-            font-weight: bold;
-        }
-        .card-content .text-area p{
-            text-overflow: ellipsis;
-        }
-
-        .card-actions a {
-            text-decoration: none;
-            color: black;
-        }
-    </style>
-</head>
-<body unresolved fullbleed>
-    <template is="dom-bind" id="app">
+        <template is="dom-if" if="[[!hidden]]">
         <paper-header-panel>
             <paper-toolbar>
-                <div class="title">Arxiv Videos</div>
+                <div>Arxiv Videos</div>
+                <div class="flex"></div>
+                <iron-icon
+                    style="cursor: pointer;" 
+                    icon="close" on-click="_onPopupClose"></iron-icon>
             </paper-toolbar>
 
             <div class="content fit">
-                <template is="dom-if" if="[[showPlaceHoldingMsg]]" restamp="true">
-                  <div class="layout horizontal center center-justified">
-                    <span id="placeHoldingMsg">[[phMsg]]</span>
-                  </div>
-                </template>
 
-                <template is="dom-repeat" items="{{resultList}}" as="resultItem">
+                <template is="dom-repeat" items="{{results}}" as="resultItem">
                     <paper-card heading="[[resultItem.title]]">
                         <div class="card-content layout horizontal start">
-                            <iron-image
-                                    class="flex-1"
-                                    src="[[resultItem.imgUrl]]"
-                                    height="[[resultItem.imgHeight]]"
-                                    width="[[resultItem.imgWidth]]"
-                            ></iron-image>
+                            <iron-image class="flex-1" src="[[resultItem.imgUrl]]" height="[[resultItem.imgHeight]]" width="[[resultItem.imgWidth]]"></iron-image>
 
                             <div class="layout vertical start flex-1 text-area">
                                 <span>[[resultItem.timestamp]]</span>
@@ -118,9 +119,35 @@
                 </template>
             </div>
         </paper-header-panel>
-    </template>
+        </template>
 
-    <script src="popup.js"></script>
-    <script src="https://apis.google.com/js/client.js?onload=gapiOnload"></script>
-</body>
-</html>
+    </template>
+    <script>
+        Polymer({
+            is: 'arxiv-video-popup',
+
+            properties: {
+                hidden: {
+                    type: Boolean,
+                    value: true,
+                    notify: true,
+                    reflectToAttribute: true
+                },
+
+                results: {
+                    type: Array,
+                    notify: true,
+                    reflectToAttribute: true
+                }
+            },
+
+            clear: function(){
+                this.set('results', []);
+            },
+
+            _onPopupClose: function(){
+                this.set('hidden', true);
+            }
+        });
+    </script>
+</dom-module>
