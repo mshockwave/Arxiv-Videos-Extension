@@ -14,6 +14,9 @@
       "matches": ["http://*.arxiv-sanity.com/*"],
       "js": [
         "bower_components/waypoints/lib/noframework.waypoints.min.js",
+        "bower_components/promise-polyfill/Promise.min.js",
+        "bower_components/fetch/fetch.js",
+        "youtube-api-rest.js",
         "keys.js",
         "content.js"
       ],

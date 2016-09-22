@@ -15,11 +15,12 @@
     "test",
     "tests"
   ],
-
   "dependencies": {
     "polymer": "Polymer/polymer#^1.2.0",
     "paper-elements": "PolymerElements/paper-elements#^1.0.1",
     "iron-elements": "PolymerElements/iron-elements#^1.0.0",
-    "waypoints": "latest"
+    "waypoints": "latest",
+    "fetch": "~1.0.0",
+    "es6-promise": "~3.3.1"
   }
 }
