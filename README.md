@@ -6,7 +6,13 @@ Use paper ids found in [Arxiv Sanity](http://www.arxiv-sanity.com/) to search in
 Build and Install
 ------------------
 Since this extension use [Polymer](https://www.polymer-project.org), [bower](https://bower.io/) and [npm](https://www.npmjs.com/). 
-It needs some processing before going into production.
+It needs some processing before going into production. 
+
+Also, the Google API key(for Youtube search function) is not included in this repository, so put the following snippet into file `keys.js`
+
+```
+var yt_api_key=YOUR_API_KEY_STR;
+```
 
 **Build:**<br/>
 `npm install`<br/>
