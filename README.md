@@ -1,3 +1,5 @@
+![Logo](/img/logo-origin.png)
+
 Arxiv Videos Chrome Extension
 ==============================
 
