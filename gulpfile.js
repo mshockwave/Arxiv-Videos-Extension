@@ -18,7 +18,6 @@ gulp.task('vulcanize', function(){
             inlineCss: true,
             inlineScripts: true
         }))
-        //.pipe($.crisper())
         .pipe(gulp.dest(dist()));
 });
 
