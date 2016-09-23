@@ -1,8 +1,9 @@
 {
-  "name": "Arxiv Videos",
+  "name": "Arxiv Youtube",
   "manifest_version": 2,
-  "version": "0.1",
-  "description": "Show Arxiv videos on http://www.arxiv-sanity.com/",
+  "version": "0.0.1",
+  "version_name": "1.0 beta",
+  "description": "Show available Youtube videos related to theses in http://www.arxiv-sanity.com/",
 
   "icons": {
     "16": "img/logo-16-2.png",
