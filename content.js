@@ -13,16 +13,21 @@ var extraButtonShadowStyle = 'box-shadow: ' +
                               '0 6px 10px 0 rgba(0, 0, 0, 0.14),' + 
                               '0 1px 18px 0 rgba(0, 0, 0, 0.12),' +
                               '0 3px 5px -1px rgba(0, 0, 0, 0.4);';
-var extraButtonBaseStyle = ' margin-left: 10px;' + 
+var extraButtonBaseStyle = ' line-height: 2.5;' + 
                             ' padding: 5px;' +
                             extraButtonShadowStyle + 
                             ' text-decoration: none;' + 
                             ' font-weight: 300;';
-var getPaperTitleNode = function(nodeId){
+var getPaperDescriptionNode = function(nodeId){
   var paperNode = document.getElementById(nodeId);
-  return paperNode.querySelector('.paperdesc')
-                  .querySelector('.ts');          
+  return paperNode.querySelector('.paperdesc');
 };
+var getPaperAuthorNode = function(nodeId){
+  return getPaperDescriptionNode(nodeId).querySelector('.as');          
+};
+var createNewlineNode = function(){
+  return document.createElement('br');
+}
 
 var addDirectNavigateButton = function(nodeId, resultObj){
   
@@ -34,7 +39,10 @@ var addDirectNavigateButton = function(nodeId, resultObj){
   naviButton.href = resultObj.videoUrl;
   naviButton.target = "_blank";
   naviButton.innerText = 'Go To Youtube Video';
-  getPaperTitleNode(nodeId).appendChild(naviButton);
+  //getPaperAuthorNode(nodeId).appendChild(naviButton);
+  getPaperDescriptionNode(nodeId).insertBefore(naviButton, getPaperAuthorNode(nodeId));
+  getPaperDescriptionNode(nodeId).insertBefore(createNewlineNode(), 
+                                    getPaperAuthorNode(nodeId));
 };
 var addShowPopupButton = function(nodeId, resultList){
   
@@ -55,9 +63,13 @@ var addShowPopupButton = function(nodeId, resultList){
         "}";
     var wrapperScriptElement = document.createElement('script');
     wrapperScriptElement.innerText = wrapperScript;
-    getPaperTitleNode(nodeId).appendChild(wrapperScriptElement);  
+    //getPaperAuthorNode(nodeId).appendChild(wrapperScriptElement);
+    getPaperDescriptionNode(nodeId).insertBefore(wrapperScriptElement, getPaperAuthorNode(nodeId));  
   };
-  getPaperTitleNode(nodeId).appendChild(toggleButton);
+  //getPaperAuthorNode(nodeId).appendChild(toggleButton);
+  getPaperDescriptionNode(nodeId).insertBefore(toggleButton, getPaperAuthorNode(nodeId));
+  getPaperDescriptionNode(nodeId).insertBefore(createNewlineNode(), 
+                                    getPaperAuthorNode(nodeId));
 };
 var queryYoutube = function(nodeId){
 
